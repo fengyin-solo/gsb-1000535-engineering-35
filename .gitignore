@@ -85,3 +85,7 @@ desktop.ini
 *.db
 *.pid
 *.seed
+
+# ===== 流水线运行期数据（台账/快照/队列/缓存） =====
+var/
+backend/var/

@@ -1,13 +1,46 @@
+# 本地（默认 profile=local）：缓存/队列走 DATA_DIR 文件实现，零外部依赖。
+#   docker compose --profile local up --build
+# 部署（profile=deploy）：缓存/队列走 Redis，entrypoint 先 preflight，
+# Redis 不可用时后端启动被阻断。
+#   docker compose --profile deploy up --build -d
 services:
+  redis:
+    image: redis:7-alpine
+    profiles: ["deploy"]
+    command: ["redis-server", "--appendonly", "yes"]
+    volumes:
+      - redis-data:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 5s
+      timeout: 2s
+      retries: 10
+
   backend:
     build: ./backend
     ports:
       - "8000:8000"
     environment:
-      - APP_ENV=local
+      - APP_ENV=${APP_ENV:-local}
+      - BUSINESS_TIMEZONE=${BUSINESS_TIMEZONE:-Asia/Shanghai}
+      - BUSINESS_DATE=${BUSINESS_DATE:-}
+      - DATA_DIR=/srv/data
+      - CACHE_BACKEND=${CACHE_BACKEND:-}
+      - QUEUE_BACKEND=${QUEUE_BACKEND:-}
+      - REDIS_URL=redis://redis:6379/0
+    volumes:
+      - pipeline-data:/srv/data
+
   frontend:
-    build: ./frontend
+    build:
+      context: ./frontend
+      args:
+        - VITE_API_BASE=
     ports:
-      - "5173:5173"
+      - "8080:8080"
     depends_on:
       - backend
+
+volumes:
+  pipeline-data:
+  redis-data:

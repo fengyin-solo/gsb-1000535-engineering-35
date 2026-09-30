@@ -19,6 +19,9 @@ const GeologicalReport = () => import('@/views/geological_report/index.vue')
 const Remote = () => import('@/views/remote/index.vue')
 const Mineral = () => import('@/views/mineral/index.vue')
 const Environmental = () => import('@/views/environmental/index.vue')
+const Deviations = () => import('@/views/deviations/index.vue')
+const Ledger = () => import('@/views/ledger/index.vue')
+const Pipeline = () => import('@/views/pipeline/index.vue')
 
 const router = createRouter({
   history: createWebHistory(),
@@ -42,6 +45,9 @@ const router = createRouter({
     { path: '/remote', name: 'remote', component: Remote },
     { path: '/mineral', name: 'mineral', component: Mineral },
     { path: '/environmental', name: 'environmental', component: Environmental },
+    { path: '/deviations', name: 'deviations', component: Deviations },
+    { path: '/ledger', name: 'ledger', component: Ledger },
+    { path: '/pipeline', name: 'pipeline', component: Pipeline },
   ],
 })
 

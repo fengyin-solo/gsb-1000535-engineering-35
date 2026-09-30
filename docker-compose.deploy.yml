@@ -1,0 +1,19 @@
+# 部署覆盖配置：启用 Redis 缓存/队列，后端等 Redis 健康后才启动，
+# 即便如此 entrypoint 仍会 preflight，依赖不可用直接阻断发布。
+#
+#   docker compose -p geo -f docker-compose.yml -f docker-compose.deploy.yml \
+#       --profile deploy up --build -d
+services:
+  redis:
+    profiles: ["deploy"]
+
+  backend:
+    environment:
+      - APP_ENV=staging
+      - CACHE_BACKEND=redis
+      - QUEUE_BACKEND=redis
+      - REDIS_URL=redis://redis:6379/0
+      - DEP_ATTEMPTS=5
+    depends_on:
+      redis:
+        condition: service_healthy
