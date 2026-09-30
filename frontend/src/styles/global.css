@@ -33,3 +33,19 @@ body { margin: 0; background: #f6f8fb; color: #1f2937; }
 .link { border: none; background: none; color: var(--brand); cursor: pointer; padding: 0; }
 .page-foot { display: flex; justify-content: space-between; margin-top: 8px; font-size: 12px; color: var(--muted); }
 .error-text { color: #b42318; }
+
+/* ===== 批次戳与核对结论 ===== */
+.batch-tag {
+  display: inline-block;
+  font-size: 12px;
+  color: #475569;
+  background: #eef2ff;
+  border: 1px solid #c7d2fe;
+  border-radius: 999px;
+  padding: 2px 10px;
+  white-space: nowrap;
+}
+.batch-ok { color: #047857; background: #ecfdf5; border-color: #a7f3d0; }
+.batch-bad { color: #b42318; background: #fef2f2; border-color: #fecaca; }
+.page-actions { display: flex; gap: 8px; align-items: center; flex-wrap: wrap; }
+.section-title { font-size: 14px; margin: 18px 0 8px; }

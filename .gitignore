@@ -85,3 +85,7 @@ desktop.ini
 *.db
 *.pid
 *.seed
+
+# ===== 流水线运行状态（检查点/快照/发布指针属于部署卷，不进仓库）=====
+backend/var/
+var/

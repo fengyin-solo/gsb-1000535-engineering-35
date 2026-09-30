@@ -57,6 +57,7 @@
 
     <footer class="page-foot">
       <span>共 {{ total }} 条测绘控制记录</span>
+      <span v-if="batchId" class="batch-tag">批次：{{ batchId }}</span>
       <span v-if="errorMessage" class="error-text">{{ errorMessage }}</span>
     </footer>
   </section>
@@ -77,6 +78,7 @@ const stats = [{"label": "完好控制点", "value": 0}, {"label": "损坏控制
 
 const rows = ref<Row[]>([])
 const total = ref(0)
+const batchId = ref<string | null>(null)
 const errorMessage = ref('')
 const filters = ref<Record<string, string>>({})
 const filterFields = columns.slice(0, 3)
@@ -121,6 +123,7 @@ async function reload() {
     const payload = await response.json()
     rows.value = payload.items ?? []
     total.value = payload.total ?? rows.value.length
+    batchId.value = payload.batch_id ?? null
   } catch (error) {
     errorMessage.value = error instanceof Error ? error.message : '测绘控制列表读取失败'
   }

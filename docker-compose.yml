@@ -4,10 +4,32 @@ services:
     ports:
       - "8000:8000"
     environment:
-      - APP_ENV=local
+      APP_ENV: prod
+      APP_VERSION: ${APP_VERSION:-1.0.0}
+      # 环境转换只改变量，业务切日始终以此时区为准
+      BUSINESS_TZ: ${BUSINESS_TZ:-Asia/Shanghai}
+      PIPELINE_STATE_DIR: /srv/app/var/pipeline
+      # 部署闸门逐项探测：缓存/队列不可用即阻断发布
+      REQUIRED_CACHE: ${REQUIRED_CACHE:-file:var/cache}
+      REQUIRED_QUEUE: ${REQUIRED_QUEUE:-file:var/queue}
+    volumes:
+      - pipeline-state:/srv/app/var
+      # 前端构建清单：CI/make build 产出 frontend/dist，闸门核对当前批次
+      - ../frontend/dist:/srv/frontend/dist:ro
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request,sys; r=urllib.request.urlopen('http://127.0.0.1:8000/api/health'); sys.exit(0 if __import__('json').loads(r.read())['ready'] else 1)"]
+      interval: 15s
+      timeout: 5s
+      retries: 5
+      start_period: 10s
+
   frontend:
     build: ./frontend
     ports:
-      - "5173:5173"
+      - "8080:80"
     depends_on:
-      - backend
+      backend:
+        condition: service_healthy
+
+volumes:
+  pipeline-state:

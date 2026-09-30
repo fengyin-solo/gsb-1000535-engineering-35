@@ -1,0 +1,30 @@
+# 本地开发编排：前后端 dev server，热更新；流水线状态挂到 backend/var
+services:
+  backend:
+    build: ./backend
+    command: ["./run.sh"]
+    working_dir: /srv/app
+    ports:
+      - "8000:8000"
+    environment:
+      APP_ENV: local
+      BUSINESS_TZ: ${BUSINESS_TZ:-Asia/Shanghai}
+      PIPELINE_STATE_DIR: /srv/app/var/pipeline
+    volumes:
+      - ./backend:/srv/app
+      - pipeline-state:/srv/app/var
+
+  frontend:
+    image: node:20-alpine
+    working_dir: /srv/web
+    command: sh -c "npm install && npm run dev -- --host 0.0.0.0"
+    ports:
+      - "5173:5173"
+    volumes:
+      - ./frontend:/srv/web
+      - /srv/web/node_modules
+    depends_on:
+      - backend
+
+volumes:
+  pipeline-state:
